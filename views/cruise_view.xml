@@ -10,14 +10,51 @@
 
 
                         <header>
-                              <button name="create_journal_entry" string="Create Invoices" type="object" class="btn btn-primary" states="confirmed"/>
+                            <field name="invoices_created" invisible="1"/>
+                              <button name="create_invoices" string="Create Invoices" type="object" class="btn btn-primary"  attrs="{'invisible':[('state','=','draft')]}"/>
+<!--                            '|',('invoices_created','=',True)-->
                             <button name="confirm" string="Confirm" type="object" class="btn btn-primary" states="draft"/>
 
 
                             <field name="state" widget="statusbar"/>
 
                         </header>
-                    <sheet>
+                     <sheet>
+                    <div name="button_box" class="oe_button_box">
+                    <field name="invoice_ids" invisible="1"/>
+                    <field name="invoice_line_ids" invisible="1"/>
+                    <button
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-pencil"
+                    name="action_view_invoices_ids"
+                    attrs="{'invisible': [('invoice_ids', '=', False)]}"
+                >
+                    <div class="o_form_field o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="invoices_count" />
+                        </span>
+                        <span class="o_stat_text"> Invoices</span>
+                    </div>
+                </button>
+
+                        <button
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-pencil"
+                    name="action_view_journal_items"
+                    attrs="{'invisible': [('invoice_line_ids', '=', False)]}"
+                >
+                    <div class="o_form_field o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="invoice_line_counts" />
+                        </span>
+                        <span class="o_stat_text"> Journals</span>
+                    </div>
+                </button>
+
+                    </div>
+
                         <div class="oe_title">
                             <label for="name"/>
                             <h1>
@@ -30,6 +67,7 @@
                                 <field name="nights"/>
                                 <field name="start_date" required="1"/>
                                 <field name="company_id" required="1"/>
+                                <field name="invoices_created" readonly="1"/>
                             </group>
                             <group>
                                 <!--                                <field name="example_field"/>-->
@@ -48,14 +86,16 @@
                                         <field name="checkin"/>
                                         <field name="nights"/>
                                         <field name="cabinet_number"/>
-                                        <field name="cabinet_type"/>
-                                        <field name="occupancy"/>
-                                        <field name="sight_seeing" widget="boolean_toggle"/>
-                                        <field name="sight_seeing_lang"
-                                               attrs="{'invisible':[('sight_seeing','=',False)]}"/>
                                         <field name="currency_id"/>
                                         <field name="rate" widget="monetary"
                                                options="{'currency_field': 'currency_id'}"/>
+                                        <field name="cabinet_type"/>
+                                        <field name="occupancy"/>
+                                        <field name="payment_method"/>
+                                        <field name="sight_seeing" widget="boolean_toggle"/>
+                                        <field name="sight_seeing_lang"
+                                               attrs="{'invisible':[('sight_seeing','=',False)]}"/>
+
                                         <field name="boarding_number"/>
                                         <field name="c_r_n"/>
                                         <field name="notes"/>
@@ -85,6 +125,7 @@
                                                 <field name="currency_id"/>
                                                 <field name="rate" widget="monetary"
                                                        options="{'currency_field': 'currency_id'}"/>
+                                                <field name="payment_method"/>
                                                 <field name="boarding_number"/>
                                                 <field name="c_r_n"/>
                                                 <field name="notes"/>
@@ -97,6 +138,15 @@
 
 
                             </page>
+
+<!--                            <page name="invoice_ids" string="Invoices">-->
+<!--                                <field name="invoice_ids" context="{'tree_view_ref':'account.view_out_invoice_tree'}" >-->
+
+<!--                                </field>-->
+<!--                            </page>-->
+<!--                            <page name="invoice_line_ids" string="Invoice Lines">-->
+<!--                                <field name="invoice_line_ids" context="{'default_group_by':'account_id'}"/>-->
+<!--                            </page>-->
 
                         </notebook>
                     </sheet>
@@ -148,6 +198,19 @@
 
         <menuitem name="Cruise" id="cruise_menu" parent="account.menu_finance_receivables" action="cruise_act_window"
                   sequence="112"/>
+
+
+         <record id="tree" model="ir.ui.view">
+            <field name="name">account.move.form</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_invoice_tree"/>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="partner_id"/>
+                </xpath>
+            </field>
+         </record>
 
     </data>
 </odoo>
