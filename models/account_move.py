@@ -88,8 +88,8 @@ class AccountMove(models.Model):
                         vals = {
                             'account_id': account_line.income_account_id.id,
 
-                            'debit': account_line.fixed_amount*qty*persons_number if r.debit else 0,
-                            'credit': account_line.fixed_amount*qty*persons_number if r.credit else 0,
+                            # 'debit': account_line.fixed_amount*qty*persons_number if r.debit else 0,
+                            # 'credit': account_line.fixed_amount*qty*persons_number if r.credit else 0,
                             'name': account_line.label,
                             'move_id': r.move_id.id,
                             'price_unit': account_line.fixed_amount*rate,
@@ -97,7 +97,7 @@ class AccountMove(models.Model):
                             'quantity': qty*persons_number
                         }
                         # print("account_line.fixed_amount*rate",account_line.fixed_amount*rate)
-                        # print("vals fixed",vals)
+                        print("vals fixed",vals)
 
                     if account_line.is_base:
 
