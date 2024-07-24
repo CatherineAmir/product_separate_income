@@ -9,8 +9,15 @@ class AccountMove(models.Model):
 class AccountMove(models.Model):
     _inherit = 'account.move.line'
     sight_seeing=fields.Boolean(string="is sight seeing?")
+    persons=fields.Integer(default=1)
+    main_line=fields.Boolean(default=False,copy=False)
+    taken_line=fields.Boolean(default=False,copy=False)
+    default_quantity=fields.Float(default=1,copy=False)
+    default_unit_price=fields.Float(copy=False)
+    default_subtotal=fields.Monetary(copy=False)
+    default_total=fields.Monetary(copy=False)
 
-    @api.constrains('product_id', 'account_id')
+    @api.constrains('product_id', 'account_id','price_unit','tax_ids')
     def split_account_lines(self):
         for r in self:
 
@@ -19,9 +26,10 @@ class AccountMove(models.Model):
             # print("r.account_id.id",r.account_id.id)
             # print("r.product_id.product_tmpl_id.property_account_income_id.id",r.product_id.product_tmpl_id.property_account_income_id.id)
             if r.product_id.product_tmpl_id.split_income_account \
-                    and r.account_id.id == r.product_id.product_tmpl_id.property_account_income_id.id:
+                    and r.account_id.id == r.product_id.product_tmpl_id.property_account_income_id.id and not r.taken_line:
                 # print("heerrrrr")
                 total_taken=0
+                r.taken_line=True
                 persons_number=int(r.product_id.product_tmpl_id.occupancy)
                 # print("persons_number",persons_number)
 
@@ -51,7 +59,8 @@ class AccountMove(models.Model):
                         if not r.sight_seeing and account_line.is_sight_seeing:
                             continue
                         if account_line.is_sight_seeing:
-                            qty=1
+                            qty=r.persons
+                            print("qty sight seeing",qty)
                             if r.move_id.currency_id.id == r.move_id.company_id.currency_id.id:
                                 if account_line.is_egyptian:
                                     pass
@@ -103,7 +112,7 @@ class AccountMove(models.Model):
                         vals = {
                             'account_id': account_line.income_account_id.id,
 
-                            'debit': all_remaining if r.debit else 0,
+                                'debit': all_remaining if r.debit else 0,
                             'credit': all_remaining if r.credit else 0,
                             'name': r.name,
                             'move_id': r.move_id.id,
@@ -117,11 +126,15 @@ class AccountMove(models.Model):
 
 
                     else:
+                        # try:
 
-                        r.move_id.with_context(check_move_validity=False)
-                        new_line = r.copy(vals)
-                        new_line.with_context(check_move_validity=False).write(vals)
+                            r.move_id.with_context(check_move_validity=False)
+                            new_line = r.copy(vals)
+                            new_line.with_context(check_move_validity=False).write(vals)
 
+                        # except:
+                        #     r.move_id.with_context(check_move_validity=False)
+                        #     new_line.with_context(check_move_validity=False).write(vals)
 
 
 

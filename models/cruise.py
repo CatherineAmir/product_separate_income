@@ -81,7 +81,17 @@ class Cruise(models.Model):
                     'price_unit':l.rate,
                     'move_id':invoice_id.id,
                     'tax_ids':product_id.taxes_id,
-                    'sight_seeing':l.sight_seeing
+                    'sight_seeing':l.sight_seeing,
+                    'persons':l.cabinet_number*int(l.occupancy),
+                    'main_line':True,
+                    'taken_line':False,
+                    'default_unit_price':l.rate,
+                    'default_quantity':int(self.nights)*l.cabinet_number,
+                    'default_subtotal':l.rate*int(self.nights)*l.cabinet_number-(l.rate*int(self.nights)*l.cabinet_number*0.12*0.14),
+                    'default_total':l.rate*int(self.nights)*l.cabinet_number
+
+
+
 
                 })
 
@@ -129,7 +139,7 @@ class Cruise(models.Model):
 class CruiseLine(models.Model):
     _name = 'cruise.line'
 
-    cruise_id=fields.Many2one('cruise.cruise', string='Cruise',autojoin=True,tracking=True)
+    cruise_id=fields.Many2one('cruise.cruise', string='Cruise',auto_join=True,tracking=True)
     partner_id=fields.Many2one('res.partner',string="Travel Agency",required=True,tracking=True,)
     guest_name=fields.Char(string="Guest Name",tracking=True,)
     guest_nationality=fields.Many2one('res.country',string="Guest Nationality",tracking=True,)
@@ -138,14 +148,14 @@ class CruiseLine(models.Model):
     cabinet_number=fields.Integer(default=1)
     cabinet_type=fields.Selection([('CABIN UPGRADE TO SUITE',"cabin upgrade  to suite"),('CABIN',"cabin"),
 
-                                 ("Other","other")],tracking=True,)
+                                 ("Other","other")],tracking=True,default="cabin",store=True,)
 
     occupancy=fields.Selection([("1","SGL"),("2","DBL"),("3","TPL")],string="Occupancy",default="2",required=True)
 
     sight_seeing=fields.Boolean(default=False,string="Sight seeing")
     sight_seeing_lang=fields.Char(string="Sight Seeing Language",store=True)
 
-    currency_id=fields.Many2one('res.currency',string="Currency",tracking=True)
+    currency_id=fields.Many2one('res.currency',string="Currency",tracking=True,required=True)
     rate=fields.Monetary(string="Rate P/Unit/Night",tracking=True,required=True)
     payment_method=fields.Selection([('cash','Cash'),('cheque','Cheque'),("bank transfer","Bank Transfer")])
     boarding_number=fields.Char(string="")

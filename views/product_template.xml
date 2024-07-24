@@ -10,6 +10,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='detailed_type']" position="after">
                     <field name="occupancy" attrs="{'required':[('detailed_type','=','service')]}"/>
+                    <field name="merge_product" widget="boolean_toggle"/>
                 </xpath>
 
                 <xpath expr="//field[@name='account_lines_ids']/tree//field[@name='label']" position="after">

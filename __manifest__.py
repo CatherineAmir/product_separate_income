@@ -28,6 +28,8 @@
 
         'views/cruise_view.xml',
         'views/product_template.xml',
+        'views/account_move.xml',
+        'reports/invoice_product_merged.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
