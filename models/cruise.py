@@ -68,13 +68,13 @@ class Cruise(models.Model):
             for l in lines:
 
                 if not l.is_paid_guide:
-                    product_id=self.env['product.product'].search([("product_tmpl_id.occupancy","=",l.occupancy),("categ_id.name","ilike","%Accomodation"),('name','not ilike','%guide%')])
-                    print("product_id",product_id)
+                    product_id=self.env['product.product'].search([("product_tmpl_id.occupancy","=",l.occupancy),("categ_id.name","ilike","%Accomodation"),('name','not ilike','%guide%')],limit=1)
+                    # print("product_id",product_id)
 
                 else:
                     product_id = self.env['product.product'].search(
-                        [("name","like","%guide%")])
-                print("product_id", product_id.name)
+                        [("name","like","%guide%")],limit=1)
+                # print("product_id", product_id.name)
                 invoice_lines.append({
                     'product_id':product_id.id,
                     'quantity':int(self.nights)*l.cabinet_number,
