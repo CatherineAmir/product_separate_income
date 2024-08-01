@@ -88,7 +88,8 @@ class Cruise(models.Model):
                     'default_unit_price':l.rate,
                     'default_quantity':int(self.nights)*l.cabinet_number,
                     'default_subtotal':l.rate*int(self.nights)*l.cabinet_number-(l.rate*int(self.nights)*l.cabinet_number*0.12*0.14),
-                    'default_total':l.rate*int(self.nights)*l.cabinet_number
+                    'default_total':l.rate*int(self.nights)*l.cabinet_number,
+                    'nights':l.nights,
 
 
 
