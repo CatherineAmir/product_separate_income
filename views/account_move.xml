@@ -10,6 +10,14 @@
             <field name="arch" type="xml">
                 <xpath expr="//page[@name='invoice_tab']//field[@name='invoice_line_ids']/tree/field[@name='price_total']" position="after">
                     <field name="main_line" invisible="1"/>
+                    <field name="persons"/>
+                    <field name="nights"/>
+                    <field name="children"/>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="payment_id"/>
+                    <field name="payment_ids"/>
+                    <field name="cruise_id"/>
                 </xpath>
 
             </field>

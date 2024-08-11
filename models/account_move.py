@@ -1,23 +1,29 @@
 from odoo import fields, models, api
 
 
-class AccountMove(models.Model):
+class AccountMoveCruise(models.Model):
     _inherit = "account.move"
 
     cruise_id = fields.Many2one("cruise.cruise", string="Cruise")
 
 
+
+
+
 class AccountMove(models.Model):
     _inherit = 'account.move.line'
     sight_seeing = fields.Boolean(string="is sight seeing?")
-    persons = fields.Integer(default=1)
-    nights = fields.Integer(default=3)
+    persons = fields.Float()
+    nights = fields.Integer()
     main_line = fields.Boolean(default=False, copy=False)
     taken_line = fields.Boolean(default=False, copy=False)
     default_quantity = fields.Float(default=1, copy=False)
     default_unit_price = fields.Float(copy=False)
     default_subtotal = fields.Monetary(copy=False)
     default_total = fields.Monetary(copy=False)
+    children = fields.Selection([('0', '0'), ('1', '1'), ('2', '2')], default='0', string="Children")
+    cabinet_number = fields.Integer(default=1)
+
 
     @api.constrains('product_id', 'account_id', 'price_unit', 'tax_ids')
     def split_account_lines(self):
@@ -32,13 +38,15 @@ class AccountMove(models.Model):
                 # print("heerrrrr")
                 total_taken = 0
                 r.taken_line = True
-                persons_number = int(r.product_id.product_tmpl_id.occupancy)
+
                 # print("persons_number",persons_number)
 
                 # print("counter",0)
                 counter = 0
                 for account_line in r.product_id.product_tmpl_id.account_lines_ids:
                     counter += 1
+                    print('r.persons',r.persons)
+
                     if account_line.separation_criteria == 'percentage':
 
                         total_taken += r.price_unit * account_line.percentage_amount
@@ -60,6 +68,7 @@ class AccountMove(models.Model):
                         if not r.sight_seeing and account_line.is_sight_seeing:
                             continue
                         if account_line.is_sight_seeing:
+                            sight_seeing=True
                             qty = r.persons
                             print("qty sight seeing", qty)
                             if r.move_id.currency_id.id == r.move_id.company_id.currency_id.id:
@@ -73,7 +82,8 @@ class AccountMove(models.Model):
                                 else:
                                     pass
                         else:
-                            print("quatinty", r.quantity)
+                            sight_seeing=False
+                            # print("quatinty", r.quantity)
                             print("persons", r.persons)
                             qty = r.persons * r.nights
                             print("qty not sight seeing", qty)
@@ -87,7 +97,8 @@ class AccountMove(models.Model):
                             'name': account_line.label,
                             'move_id': r.move_id.id,
                             'price_unit': account_line.fixed_amount * rate,
-                            'quantity': qty
+                            'quantity': qty,
+                            'sight_seeing':sight_seeing,
                         }
                         # print("account_line.fixed_amount*rate",account_line.fixed_amount*rate)
                         print("vals fixed", vals)

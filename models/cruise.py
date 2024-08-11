@@ -4,7 +4,7 @@ from odoo.exceptions import ValidationError
 
 class Cruise(models.Model):
     _name = 'cruise.cruise'
-    _inherit=['mail.thread', 'mail.activity.mixin']
+    _inherit=['mail.thread', 'mail.activity.mixin', "analytic.mixin"]
     _description = 'Cruise Trip'
     _rec_name='name'
 
@@ -13,16 +13,22 @@ class Cruise(models.Model):
     start_date = fields.Date(string='Start Date',tracking=True,required=True)
 
     company_id=fields.Many2one('res.company', string='Company',default=lambda self: self.env.user.company_id)
-    cruise_lines=fields.One2many('cruise.line','cruise_id',string="Cruise Line")
+    cruise_lines=fields.One2many('cruise.line','cruise_id',string="Cruise Line",copy=True)
 
     state=fields.Selection([("draft","Draft"),("confirmed","Confirmed"),("cancelled","Cancelled")],default='draft',string='State',tracking=True)
 
-    invoice_ids = fields.One2many('account.move','cruise_id', string="Invoices",readonly=1)
-    invoice_line_ids = fields.Many2many('account.move.line')
+    invoice_ids = fields.One2many('account.move','cruise_id', string="Invoices",readonly=1,copy=False)
+    invoice_line_ids = fields.Many2many('account.move.line',copy=False)
     invoices_count=fields.Integer(string="Invoices Count",compute="compute_invoices")
     invoice_line_counts=fields.Integer(string="Lines",compute="compute_invoices")
 
     invoices_created=fields.Boolean(string="invoices_created")
+
+    analytic_distribution = fields.Json(
+        )
+
+
+
     @api.depends('start_date','company_id')
     def _compute_name(self):
         for r in self:
@@ -75,6 +81,13 @@ class Cruise(models.Model):
                     product_id = self.env['product.product'].search(
                         [("name","like","%guide%")],limit=1)
                 # print("product_id", product_id.name)
+                # print('persons before',l.cabinet_number*(int(l.occupancy)+0.5*int(l.children)))
+                # # print('l.cabinet_number',l.cabinet_number)
+                # # print('(int(l.occupancy)',int(l.occupancy))
+                # # print('(int(l.children)',int(l.children))
+                # print('(int(l.occupancy)-0.5*int(l.children)',(int(l.occupancy)-0.5*int(l.children)))
+                # print('persons',l.cabinet_number*(int(l.occupancy)-0.5*int(l.children)),)
+
                 invoice_lines.append({
                     'product_id':product_id.id,
                     'quantity':int(self.nights)*l.cabinet_number,
@@ -82,7 +95,7 @@ class Cruise(models.Model):
                     'move_id':invoice_id.id,
                     'tax_ids':product_id.taxes_id,
                     'sight_seeing':l.sight_seeing,
-                    'persons':l.cabinet_number*int(l.occupancy),
+                    'persons':l.cabinet_number*(int(l.occupancy)+0.5*int(l.children)),
                     'main_line':True,
                     'taken_line':False,
                     'default_unit_price':l.rate,
@@ -90,9 +103,9 @@ class Cruise(models.Model):
                     'default_subtotal':l.rate*int(self.nights)*l.cabinet_number-(l.rate*int(self.nights)*l.cabinet_number*0.12*0.14),
                     'default_total':l.rate*int(self.nights)*l.cabinet_number,
                     'nights':l.nights,
-
-
-
+                    'children':l.children,
+                    'cabinet_number':l.cabinet_number,
+                    'analytic_distribution':l.analytic_distribution,
 
                 })
 
@@ -114,6 +127,8 @@ class Cruise(models.Model):
                 self.invoices_created=True
             else:
                 self.invoices_created=False
+
+
     def action_view_invoices_ids(self):
         return {
             "type": "ir.actions.act_window",
@@ -127,18 +142,47 @@ class Cruise(models.Model):
             },
         }
     def action_view_journal_items(self):
+        domain=[("reconciled_invoice_ids", "in", self.invoice_ids.ids), ("state", '=', "posted"),
+         ("payment_type", '=', 'inbound')]
+        payment_journal_entry=self.env['account.payment'].search(domain).mapped("move_id")
+        payment_journal_item=payment_journal_entry.mapped("line_ids").ids
         return {
             "type": "ir.actions.act_window",
             "res_model": "account.move.line",
-            "domain": [("id", "in", self.invoice_line_ids.ids)],
+            "domain": [("id", "in", self.invoice_line_ids.ids+payment_journal_item)],
             "name": self.name,
             "view_mode": "tree,form",
             "context": {
-                "default_group_by": "account_id",
+                "group_by": "account_id",
             },
         }
+    def action_view_analytic_lines(self):
+        return{
+            "type":"ir.actions.act_window",
+            "res_model": "account.analytic.line",
+            "domain": [("move_line_id", "in", self.invoice_line_ids.ids)],
+            "name": self.name,
+            "view_mode": "tree,form",
+            "context":{
+                "group_by": "account_id"
+            }
+        }
+    def action_view_payments(self):
+        print("domain",[("reconciled_invoice_ids", "in", self.invoice_ids.ids)])
+        return{
+            "type":"ir.actions.act_window",
+            "res_model": "account.payment",
+            "domain": [("reconciled_invoice_ids", "in", self.invoice_ids.ids),("state",'=',"posted"),("payment_type",'=','inbound')],
+            "name": self.name,
+            "view_mode": "tree,form",
+            # "context":{
+            #     "group_by": "account_id"
+            # }
+        }
+
 class CruiseLine(models.Model):
     _name = 'cruise.line'
+    _inherit = ['mail.thread', 'mail.activity.mixin', "analytic.mixin"]
 
     cruise_id=fields.Many2one('cruise.cruise', string='Cruise',auto_join=True,tracking=True)
     partner_id=fields.Many2one('res.partner',string="Travel Agency",required=True,tracking=True,)
@@ -164,6 +208,20 @@ class CruiseLine(models.Model):
     notes=fields.Char(string="Notes")
 
     is_paid_guide=fields.Boolean(string="Paid Guide",default=False)
+
+    children=fields.Selection([('0','0'),('1','1'),('2','2')],default='0',string="Children")
+    analytic_distribution = fields.Json(compute="_compute_analytic_distribution",store=True,inverse="_compute_dummy")
+
+    @api.depends('cruise_id.analytic_distribution')
+    def _compute_analytic_distribution(self):
+        for rec in self:
+            rec.analytic_distribution=rec.cruise_id.analytic_distribution
+
+
+    def _compute_dummy(self):
+        for rec in self:
+            pass
+
 
 
 

@@ -23,6 +23,7 @@
                     <div name="button_box" class="oe_button_box">
                     <field name="invoice_ids" invisible="1"/>
                     <field name="invoice_line_ids" invisible="1"/>
+]
                     <button
                     type="object"
                     class="oe_stat_button"
@@ -52,6 +53,35 @@
                         <span class="o_stat_text"> Journals</span>
                     </div>
                 </button>
+                    <button
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-pencil"
+                    name="action_view_analytic_lines">
+
+
+                    <div class="o_form_field o_stat_info">
+                        <span class="o_stat_value">
+
+                        </span>
+                        <span class="o_stat_text"> Analytic Accounts</span>
+                    </div>
+                </button>
+
+                        <button
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-pencil"
+                    name="action_view_payments">
+
+
+                    <div class="o_form_field o_stat_info">
+                        <span class="o_stat_value">
+
+                        </span>
+                        <span class="o_stat_text"> Payments</span>
+                    </div>
+                </button>
 
                     </div>
 
@@ -68,6 +98,7 @@
                                 <field name="start_date" required="1"/>
                                 <field name="company_id" required="1"/>
                                 <field name="invoices_created" readonly="1"/>
+                                 <field name="analytic_distribution"  widget="analytic_distribution"/>
                             </group>
                             <group>
                                 <!--                                <field name="example_field"/>-->
@@ -91,6 +122,7 @@
                                                options="{'currency_field': 'currency_id'}"/>
                                         <field name="cabinet_type"/>
                                         <field name="occupancy"/>
+                                        <field name="children" required="1"/>
                                         <field name="payment_method"/>
                                         <field name="sight_seeing" widget="boolean_toggle"/>
                                         <field name="sight_seeing_lang"
@@ -114,6 +146,8 @@
                                                 <field name="cabinet_number"/>
                                                 <field name="cabinet_type"/>
                                                 <field name="occupancy"/>
+                                                <field name="children" required="1"/>
+                                                <field name="analytic_distribution" widget="analytic_distribution" readonly="0"/>
                                             </group>
                                             <group>
 
