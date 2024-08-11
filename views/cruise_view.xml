@@ -93,6 +93,7 @@
                         </div>
                         <group>
                             <group>
+                                <field name="cruise_name"/>
                                 <field name="create_date"/>
                                 <field name="nights"/>
                                 <field name="start_date" required="1"/>
@@ -111,6 +112,8 @@
                                 <field name="cruise_lines">
                                     <tree>
                                         <field name="cruise_id"/>
+                                        <field name="cruise_name"/>
+                                         <field name="analytic_distribution"  widget="analytic_distribution"/>
                                         <field name="partner_id"/>
                                         <field name="guest_name"/>
                                         <field name="guest_nationality"/>
@@ -127,7 +130,7 @@
                                         <field name="sight_seeing" widget="boolean_toggle"/>
                                         <field name="sight_seeing_lang"
                                                attrs="{'invisible':[('sight_seeing','=',False)]}"/>
-
+                                        <field name="sight_seeing_price_person" attrs="{'invisible':[('sight_seeing','=',False)]}"/>
                                         <field name="boarding_number"/>
                                         <field name="c_r_n"/>
                                         <field name="notes"/>
@@ -138,9 +141,10 @@
                                         <group>
                                             <group>
                                                 <field name="cruise_id" readonly="1"/>
+                                                <field name="cruise_name"/>
                                                 <field name="partner_id"/>
                                                 <field name="guest_name"/>
-                                                <field name="guest_nationality"/>
+                                                <field name="guest_nationality" required="1"/>
                                                 <field name="checkin"/>
                                                 <field name="nights"/>
                                                 <field name="cabinet_number"/>
@@ -156,6 +160,7 @@
                                                 <field name="sight_seeing" widget="boolean_toggle"/>
                                                 <field name="sight_seeing_lang"
                                                        attrs="{'invisible':[('sight_seeing','=',False)]}"/>
+                                                <field name="sight_seeing_price_person" attrs="{'invisible':[('sight_seeing','=',False)]}"/>
                                                 <field name="currency_id"/>
                                                 <field name="rate" widget="monetary"
                                                        options="{'currency_field': 'currency_id'}"/>
@@ -200,6 +205,7 @@
             <field name="arch" type="xml">
                 <tree string="Cruise Trip">
                     <field name="name"/>
+                    <field name="cruise_name"/>
                     <field name="nights"/>
                     <field name="start_date"/>
                     <field name="company_id"/>
@@ -234,14 +240,17 @@
                   sequence="112"/>
 
 
-         <record id="tree" model="ir.ui.view">
-            <field name="name">account.move.form</field>
+         <record id="move_tree" model="ir.ui.view">
+            <field name="name">account.move.tree</field>
             <field name="model">account.move</field>
             <field name="inherit_id" ref="account.view_invoice_tree"/>
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='name']" position="after">
                     <field name="partner_id"/>
+                    <field name="cruise_id"/>
+                    <field name="cruise_name"/>
+
                 </xpath>
             </field>
          </record>

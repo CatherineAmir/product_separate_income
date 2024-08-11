@@ -13,14 +13,34 @@
                     <field name="persons"/>
                     <field name="nights"/>
                     <field name="children"/>
+                    <field name="sight_seeing_price_person"/>
+                    <field name="guest_nationality"/>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="after">
-                    <field name="payment_id"/>
-                    <field name="payment_ids"/>
                     <field name="cruise_id"/>
+                    <field name="cruise_name"/>
                 </xpath>
 
             </field>
         </record>
+
+
+<!--             <record id="account_tree_cruise_inherit" model="ir.ui.view">-->
+<!--            <field name="name">account.move.tree</field>-->
+<!--            <field name="model">account.move</field>-->
+<!--            <field name="inherit_id" ref="account.view_invoice_tree"/>-->
+<!--            <field name="priority" eval="8"/>-->
+<!---->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//field[@name='partner_id']">-->
+<!--                    <field name="cruise_id"/>-->
+<!--                    <field name="cruise_name"/>-->
+<!--                </xpath>-->
+<!--            </field>-->
+<!--             </record>-->
+
+
+
+
     </data>
 </odoo>
