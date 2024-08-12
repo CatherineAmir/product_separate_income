@@ -18,26 +18,58 @@
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="cruise_id"/>
-                    <field name="cruise_name"/>
+                    <field name="cruise_boat_id"/>
                 </xpath>
 
             </field>
         </record>
 
 
-<!--             <record id="account_tree_cruise_inherit" model="ir.ui.view">-->
-<!--            <field name="name">account.move.tree</field>-->
-<!--            <field name="model">account.move</field>-->
-<!--            <field name="inherit_id" ref="account.view_invoice_tree"/>-->
-<!--            <field name="priority" eval="8"/>-->
-<!---->
-<!--            <field name="arch" type="xml">-->
-<!--                <xpath expr="//field[@name='partner_id']">-->
-<!--                    <field name="cruise_id"/>-->
-<!--                    <field name="cruise_name"/>-->
-<!--                </xpath>-->
-<!--            </field>-->
-<!--             </record>-->
+   <record id="move_tree" model="ir.ui.view">
+            <field name="name">account.move.tree</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_invoice_tree"/>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="partner_id"/>
+                    <field name="cruise_id"/>
+                    <field name="cruise_boat_id"/>
+
+                </xpath>
+            </field>
+         </record>
+
+     <record id="move_line_tree" model="ir.ui.view">
+            <field name="name">account.move.line.tree</field>
+            <field name="model">account.move.line</field>
+            <field name="inherit_id" ref="account_reports.view_archived_tag_move_tree"/>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="cruise_id"/>
+                    <field name="cruise_boat_id"/>
+
+                </xpath>
+            </field>
+     </record>
+
+        <record id="move_line_tree-tax" model="ir.ui.view">
+            <field name="name">account.move.line.tax.tree</field>
+            <field name="model">account.move.line</field>
+            <field name="inherit_id" ref="account.view_move_line_tax_audit_tree"/>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="cruise_id"/>
+                    <field name="cruise_boat_id"/>
+
+                </xpath>
+            </field>
+     </record>
+<!--        account.view_move_line_tax_audit_tree-->
+
+
 
 
 

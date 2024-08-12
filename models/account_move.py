@@ -5,8 +5,9 @@ class AccountMoveCruise(models.Model):
     _inherit = "account.move"
 
     cruise_id = fields.Many2one("cruise.cruise", string="Cruise")
-    cruise_name=fields.Selection(
-        [("Dahabia", 'dahabia'), ("Sun", 'sun'), ("Moon", 'moon'), ("Star", "star"), ("Nile", 'nile')])
+    cruise_boat_id = fields.Many2one("cruise.boat", string='Cruise Boat')
+    # cruise_name=fields.Selection(
+    #     [("Dahabia", 'dahabia'), ("Sun", 'sun'), ("Moon", 'moon'), ("Star", "star"), ("Nile", 'nile')])
 
 
 
@@ -27,8 +28,9 @@ class AccountMove(models.Model):
     children = fields.Selection([('0', '0'), ('1', '1'), ('2', '2')], default='0', string="Children")
     cabinet_number = fields.Integer(default=1)
     guest_nationality = fields.Many2one('res.country', string="Guest Nationality", tracking=True, )
-    cruise_name = fields.Selection(related='move_id.cruise_name', string="cruise name",store=True)
-
+    # cruise_name = fields.Selection(related='move_id.cruise_name', string="cruise name",store=True)
+    cruise_boat_id = fields.Many2one("cruise.boat",related="move_id.cruise_boat_id", string='Cruise Boat',store=True)
+    cruise_id=fields.Many2one('cruise.cruise', string="Cruise ID", related='move_id.cruise_id',store=True)
     @api.constrains('product_id',
                     'account_id', 'price_unit', 'tax_ids')
     def split_account_lines(self):

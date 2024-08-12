@@ -25,11 +25,14 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-
+        'views/cruise_boat_view.xml',
         'views/cruise_view.xml',
         'views/product_template.xml',
         'views/account_move.xml',
+        'views/payments.xml',
         'reports/invoice_product_merged.xml',
+        'wizards/payment_register.xml',
+
     ],
     # only loaded in demonstration mode
     'demo': [

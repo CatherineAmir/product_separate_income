@@ -9,7 +9,8 @@ class Cruise(models.Model):
     _rec_name='name'
 
     name = fields.Char(compute='_compute_name',store=1,string='Name',tracking=True,inverse="_set_name",copy=False)
-    cruise_name=fields.Selection([("Dahabia",'dahabia'),("Sun",'sun'),("Moon",'moon'),("Star","star"),("Nile",'nile')],default="Dahabia")
+    # cruise_boat_idcruise_boat_id=fields.Selection([("Dahabia",'dahabia'),("Sun",'sun'),("Moon",'moon'),("Star","star"),("Nile",'nile')],default="Dahabia")
+    cruise_boat_id=fields.Many2one("cruise.boat",string='Cruise Boat')
     nights=fields.Selection([('3', '3'), ('4', '4'),('7','7')],default='3', string='Nights',tracking=True)
     start_date = fields.Date(string='Start Date',tracking=True,required=True)
 
@@ -30,11 +31,11 @@ class Cruise(models.Model):
 
 
 
-    @api.depends('start_date','cruise_name')
+    @api.depends('start_date','cruise_boat_id')
     def _compute_name(self):
         for r in self:
-            if r.start_date and r.cruise_name:
-                r.name= str(r.cruise_name) + ' - ' + r.start_date.strftime('%d-%m-%Y')
+            if r.start_date and r.cruise_boat_id:
+                r.name= str(r.cruise_boat_id.name) + ' - ' + r.start_date.strftime('%d-%m-%Y')
 
     def _set_name(self):
         for r in self:
@@ -47,19 +48,23 @@ class Cruise(models.Model):
 
 
     def create_invoices(self):
-        cruise_lines=self.cruise_lines.read_group(domain=[],
-                                                  fields=['id','partner_id','currency_id','guest_nationality','nights','cabinet_number','occupancy','sight_seeing','rate','is_paid_guide','cruise_name'
-                                                                ],groupby=['partner_id','currency_id','cruise_name'],lazy=False)
+        cruise_lines=self.cruise_lines.read_group(domain=[("cruise_id",'=',self.id)],
+                                                  fields=['id','partner_id','currency_id','guest_nationality','nights','cabinet_number','occupancy','sight_seeing','rate','is_paid_guide','cruise_boat_id'
+                                                                ],groupby=['partner_id','currency_id','cruise_boat_id'],lazy=False)
 
         print("cruise_lines",len(cruise_lines))
         for line in cruise_lines:
             print('line..',line)
             currency_id=line['currency_id'][0]
             partner_id=line['partner_id'][0]
-            cruise_name=line['cruise_name']
-            print("cruise_name",cruise_name)
+            if line['cruise_boat_id']:
+                cruise_boat_id=line['cruise_boat_id'][0]
+                print("cruise_boat_id",cruise_boat_id)
+            else:
+                cruise_boat_id=False
             lines = self.cruise_lines.filtered(
-                lambda l: l.partner_id.id == partner_id and l.currency_id.id == currency_id and l.cruise_name==cruise_name)
+                lambda l: l.partner_id.id == partner_id and l.currency_id.id == currency_id and l.cruise_boat_id.id==cruise_boat_id)
+            print("lines",lines)
             if not len(lines):
                 continue
             invoice_id = self.env['account.move'].create({
@@ -68,13 +73,13 @@ class Cruise(models.Model):
                 'currency_id': currency_id,
                 'cruise_id': self.id,
                 'invoice_date': self.start_date,
-                'cruise_name': cruise_name,
+                'cruise_boat_id': cruise_boat_id,
 
             })
             print('invoice_id',invoice_id)
 
 
-            lines=self.cruise_lines.filtered(lambda l :l.partner_id.id==partner_id and l.currency_id.id==currency_id and l.cruise_name==cruise_name )
+            lines=self.cruise_lines.filtered(lambda l :l.partner_id.id==partner_id and l.currency_id.id==currency_id and l.cruise_boat_id.id==cruise_boat_id )
             print("lines",lines)
             invoice_lines=[]
             for l in lines:
@@ -222,15 +227,15 @@ class CruiseLine(models.Model):
 
     children=fields.Selection([('0','0'),('1','1'),('2','2')],default='0',string="Children")
     analytic_distribution = fields.Json(compute="_compute_analytic_distribution",store=True,inverse="_compute_dummy")
-    cruise_name = fields.Selection(
-        [("Dahabia", 'dahabia'), ("Sun", 'sun'), ("Moon", 'moon'), ("Star", "star"), ("Nile", 'nile')],
-        default="Dahabia",compute="_compute_cruise_name",store=True,inverse="_set_cruise_name")
-
-    @api.depends('cruise_id.cruise_name')
-    def _compute_cruise_name(self):
+    # cruise_boat_id = fields.Selection(
+    #     [("Dahabia", 'dahabia'), ("Sun", 'sun'), ("Moon", 'moon'), ("Star", "star"), ("Nile", 'nile')],
+    #     default="Dahabia",compute="_compute_cruise_boat_id",store=True,inverse="_set_cruise_boat_id")
+    cruise_boat_id=fields.Many2one('cruise.boat',string="Cruise Name",compute="_compute_cruise_boat_id",store=True,inverse="_set_cruise_boat_id")
+    @api.depends('cruise_id.cruise_boat_id')
+    def _compute_cruise_boat_id(self):
         for record in self:
-            record.cruise_name =record.cruise_id.cruise_name
-    def _set_cruise_name(self):
+            record.cruise_boat_id =record.cruise_id.cruise_boat_id.id
+    def _set_cruise_boat_id(self):
        for r in self:
            pass
     @api.depends('cruise_id.nights')

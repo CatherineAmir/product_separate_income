@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="payment_form_inherit" model="ir.ui.view">
+            <field name="name">account.payment.register.form</field>
+            <field name="model">account.payment.register</field>
+            <field name="inherit_id" ref="account.view_account_payment_register_form"/>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='communication']" position="after">
+                    <field name="cruise_ids" widget="many2many_tags"/>
+                    <field name="cruise_boat_ids" widget="many2many_tags"/>
+                </xpath>
+
+            </field>
+        </record>
+    </data>
+</odoo>

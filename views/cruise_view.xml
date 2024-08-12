@@ -93,7 +93,7 @@
                         </div>
                         <group>
                             <group>
-                                <field name="cruise_name"/>
+                                <field name="cruise_boat_id"/>
                                 <field name="create_date"/>
                                 <field name="nights"/>
                                 <field name="start_date" required="1"/>
@@ -112,7 +112,7 @@
                                 <field name="cruise_lines">
                                     <tree>
                                         <field name="cruise_id"/>
-                                        <field name="cruise_name"/>
+                                        <field name="cruise_boat_id"/>
                                          <field name="analytic_distribution"  widget="analytic_distribution"/>
                                         <field name="partner_id"/>
                                         <field name="guest_name"/>
@@ -141,7 +141,7 @@
                                         <group>
                                             <group>
                                                 <field name="cruise_id" readonly="1"/>
-                                                <field name="cruise_name"/>
+                                                <field name="cruise_boat_id"/>
                                                 <field name="partner_id"/>
                                                 <field name="guest_name"/>
                                                 <field name="guest_nationality" required="1"/>
@@ -205,7 +205,7 @@
             <field name="arch" type="xml">
                 <tree string="Cruise Trip">
                     <field name="name"/>
-                    <field name="cruise_name"/>
+                    <field name="cruise_boat_id"/>
                     <field name="nights"/>
                     <field name="start_date"/>
                     <field name="company_id"/>
@@ -240,20 +240,7 @@
                   sequence="112"/>
 
 
-         <record id="move_tree" model="ir.ui.view">
-            <field name="name">account.move.tree</field>
-            <field name="model">account.move</field>
-            <field name="inherit_id" ref="account.view_invoice_tree"/>
-            <field name="priority" eval="8"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='name']" position="after">
-                    <field name="partner_id"/>
-                    <field name="cruise_id"/>
-                    <field name="cruise_name"/>
 
-                </xpath>
-            </field>
-         </record>
 
     </data>
 </odoo>

@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_cruise_boat,acess_group_boat,model_cruise_boat,,1,1,1,1
 access_cruise_cruise,access_cruise_cruise,model_cruise_cruise,,1,1,1,1
 access_cruise_cruise_line,access_cruise_cruise_line,model_cruise_line,,1,1,1,1
