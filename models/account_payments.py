@@ -11,7 +11,11 @@ class Payment(models.Model):
 
     cruise_ids = fields.Many2many('cruise.cruise', string="Cruise_id",compute="_compute_cruise_ids",store=True,inverse='set_cruise_ids')
     cruise_boat_ids=fields.Many2many('cruise.boat', store=True,compute="_compute_cruise_boat_ids",inverse='_set_cruise_boat_ids')
-
+    analytic_distribution = fields.Json()
+    analytic_precision = fields.Integer(
+        store=False,
+        default=lambda self: self.env['decimal.precision'].precision_get("Percentage Analytic"),
+    )
     @api.depends('payment_type','has_reconciled_entries')
     def _compute_payment_state(self):
         for record in self:
@@ -36,3 +40,27 @@ class Payment(models.Model):
     def _set_cruise_boat_ids(self):
         for r in self:
             pass
+
+    def action_post(self):
+        ''' draft -> posted '''
+        if self.analytic_distribution:
+            for line in self.move_id.line_ids:
+                if self.payment_type=='inbound':
+                    if line.credit:
+                        line.analytic_distribution = self.analytic_distribution
+                    else:
+                        pass #don't add analytic account
+
+                if self.payment_type == 'outbound':
+                    if line.debit:
+                        line.analytic_distribution = self.analytic_distribution
+                    else:
+                        pass #don't add analytic account
+
+
+        super(Payment,self).action_post()
+        # self.move_id._post(soft=False)
+
+#         self.filtered(
+#             lambda pay: pay.is_internal_transfer and not pay.paired_internal_transfer_payment_id
+#         )._create_paired_internal_transfer_payment()

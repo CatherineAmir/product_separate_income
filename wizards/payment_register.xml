@@ -11,6 +11,7 @@
                 <xpath expr="//field[@name='communication']" position="after">
                     <field name="cruise_ids" widget="many2many_tags"/>
                     <field name="cruise_boat_ids" widget="many2many_tags"/>
+                    <field name="analytic_distribution"  widget="analytic_distribution"/>
                 </xpath>
 
             </field>
