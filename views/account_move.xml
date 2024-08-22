@@ -20,6 +20,9 @@
                     <field name="cruise_id"/>
                     <field name="cruise_boat_id"/>
                 </xpath>
+                 <xpath expr="//page[@name='aml_tab']//field[@name='line_ids']/tree/field[@name='name']" position="after">
+                    <field name="display_type"/>
+                 </xpath>
 
             </field>
         </record>

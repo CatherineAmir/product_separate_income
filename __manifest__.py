@@ -20,7 +20,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','product','account','mail','service_product_package'],
+    'depends': ['base','product','account','mail','service_product_package','stock','stock_account'],
 
     # always loaded
     'data': [
@@ -32,6 +32,7 @@
         'views/payments.xml',
         'reports/invoice_product_merged.xml',
         'wizards/payment_register.xml',
+        'views/stock_picking.xml',
 
     ],
     # only loaded in demonstration mode

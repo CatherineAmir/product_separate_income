@@ -61,7 +61,7 @@ class Cruise(models.Model):
                 cruise_boat_id=line['cruise_boat_id'][0]
                 print("cruise_boat_id",cruise_boat_id)
             else:
-                cruise_boat_id=False
+                cruise_boat_id=self.cruise_boat_id.id
             lines = self.cruise_lines.filtered(
                 lambda l: l.partner_id.id == partner_id and l.currency_id.id == currency_id and l.cruise_boat_id.id==cruise_boat_id)
             print("lines",lines)
@@ -85,13 +85,17 @@ class Cruise(models.Model):
             for l in lines:
 
                 if not l.is_paid_guide:
-                    product_id=self.env['product.product'].search([("product_tmpl_id.occupancy","=",l.occupancy),("categ_id.name","ilike","%Accomodation"),('name','not ilike','%guide%')],limit=1)
-                    # print("product_id",product_id)
+                    product_id=self.env['product.product'].search([("product_tmpl_id.occupancy","=",l.occupancy),("categ_id.name","ilike","%Accomodation")
+                                                                      ,('name','not ilike','%guide%'),
+                                                                      ("boat_id","=",cruise_boat_id)])
+
+
+                    print("product_id",product_id)
 
                 else:
-                    print("guid")
+                    # print("guid")
                     product_id = self.env['product.product'].search(
-                        [("name","ilike","%guide%")],limit=1)
+                        [("name","ilike","%guide%"),("boat_id","=",cruise_boat_id)],limit=1)
                     print("product_id", product_id.name)
                 # print('persons before',l.cabinet_number*(int(l.occupancy)+0.5*int(l.children)))
                 # # print('l.cabinet_number',l.cabinet_number)
@@ -172,10 +176,14 @@ class Cruise(models.Model):
             },
         }
     def action_view_analytic_lines(self):
+        domain = [("reconciled_invoice_ids", "in", self.invoice_ids.ids), ("state", '=', "posted"),
+                  ("payment_type", '=', 'inbound')]
+        payment_journal_entry = self.env['account.payment'].search(domain).mapped("move_id")
+        payment_journal_item = payment_journal_entry.mapped("line_ids").ids
         return{
             "type":"ir.actions.act_window",
             "res_model": "account.analytic.line",
-            "domain": [("move_line_id", "in", self.invoice_line_ids.ids)],
+            "domain": [("move_line_id", "in", self.invoice_line_ids.ids+payment_journal_item)],
             "name": self.name,
             "view_mode": "tree,form",
             "context":{

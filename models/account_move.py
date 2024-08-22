@@ -11,9 +11,18 @@ class AccountMoveCruise(models.Model):
 
 
 
+    def add_analytic_account(self):
+        for move in self:
+            analytics=list(move.invoice_line_ids.filtered(lambda line:line.main_line).mapped("analytic_distribution"))
+            print("analytics",analytics)
+            print("type_analytics",type(analytics))
+            if len(analytics)==1:
+                for tax_line in move.line_ids.filtered(lambda x :x.display_type=="tax"):
+
+                    tax_line.analytic_distribution=tax_line.analytic_distribution=analytics[0]
 
 
-class AccountMove(models.Model):
+class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
     sight_seeing = fields.Boolean(string="is sight seeing?")
     sight_seeing_price_person = fields.Float(string="Sight Seeing for Person in EGP", )
@@ -154,6 +163,8 @@ class AccountMove(models.Model):
                             new_line = r.copy(vals)
                             new_line.with_context(check_move_validity=False).write(vals)
 
+
+            r.move_id.add_analytic_account()
 
 
 

@@ -12,16 +12,7 @@ class AccountPaymentRegister(models.TransientModel):
     cruise_boat_ids = fields.Many2many('cruise.boat', store=True, compute="_compute_cruise_ids",
                                        inverse='set_cruise_ids')
     analytic_distribution = fields.Json()
-    # ori_line_ids = fields.Many2many('account.move.line', 'account_payment_register_move_line_def_rel', 'def_wizard_id', 'def_line_id',
-    #                             string="Journal items", readonly=True, copy=False, )
 
-    # line_ids = fields.Many2many(
-    #     'account.move.line',  # The model you're relating to
-    #     'analytic_mixin_payment_register_line_rel',  # Custom relation/table name
-    #     'payment_id',  # Column name in the relation table that references the current model
-    #     'line_id',  # Column name in the relation table that references the related model
-    #     string='Lines'
-    # )
     analytic_precision = fields.Integer(
         store=False,
         default=lambda self: self.env['decimal.precision'].precision_get("Percentage Analytic"),

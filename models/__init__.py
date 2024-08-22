@@ -5,3 +5,4 @@ from . import product_template
 from . import product_income_account
 from . import account_move
 from . import account_payments
+from . import stock_picking
