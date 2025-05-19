@@ -2,30 +2,163 @@
 <odoo>
     <data>
 
-<!--        <record id="ModelName_form_view" model="ir.ui.view">-->
-<!--            <field name="name">ProjectName.ModelName.form</field>-->
-<!--            <field name="model">ProjectName.ModelName</field>-->
-<!--            <field name="arch" type="xml">-->
-<!--                <form string="ModelTitle">-->
-<!--                    <sheet>-->
-<!--                        <div class="oe_title">-->
-<!--                            <label for="example_title"/>-->
-<!--                            <h1>-->
-<!--                                <field name="example_title" placeholder="Title"/>-->
-<!--                            </h1>-->
-<!--                        </div>-->
-<!--                        <group>-->
-<!--                            <group>-->
-<!--                                <field name="create_date"/>-->
-<!--                            </group>-->
-<!--                            <group>-->
-<!--                                <field name="example_field"/>-->
-<!--                            </group>-->
-<!--                        </group>-->
-<!--                    </sheet>-->
-<!--                </form>-->
-<!--            </field>-->
-<!--        </record>-->
+        <record id="cruise_boat_form_view" model="ir.ui.view">
+            <field name="name">cruise.boat.form</field>
+            <field name="model">cruise.boat</field>
+            <field name="arch" type="xml">
+                <form string="Boat">
+
+
+
+                    <sheet>
+                        <div name="button_box" class="oe_button_box">
+                            <field name="cruise_count" invisible="1"/>
+                            <field name="cruise_ids" invisible="1"/>
+                            <field name="cruise_lines" invisible="1"/>
+                            <field name="product_ids" invisible="1"/>
+                            <field name="product_count" invisible="1"/>
+                           <field name="transfer_ids" invisible="1"/>
+                            <field name="transfer_count" invisible="1"/>
+                             <field name="invoice_ids" invisible="1"/>
+                            <field name="invoice_line_ids" invisible="1"/>
+                            <button
+                                type="object"
+                                class="oe_state_button"
+                                icon="fa-ship"
+                                name="action_view_cruise_lines"
+                                attrs="{'invisible':[('cruise_lines','=',False)]}">
+
+                               <div class="o_form_field o_stat_info">
+
+                        <span class="o_stat_text"> Cruise Lines</span>
+                    </div>
+                            </button>
+                            <button
+                                type="object"
+                                class="oe_state_button"
+                                icon="fa-ship"
+                                name="action_view_cruises"
+                                attrs="{'invisible':[('cruise_ids','=',False)]}">
+
+                               <div class="o_form_field o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="cruise_count" />
+                        </span>
+                        <span class="o_stat_text"> Cruises</span>
+                    </div>
+                            </button>  
+                            <button
+                                type="object"
+                                class="oe_state_button"
+                                icon="fa-bed"
+                                name="action_view_products"
+                                attrs="{'invisible':[('product_ids','=',False)]}">
+
+                               <div class="o_form_field o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="product_count"/>
+                        </span>
+                        <span class="o_stat_text"> Rooms</span>
+                    </div>
+                            </button>  
+                            <button
+                                type="object"
+                                class="oe_state_button"
+                                icon="fa-exchange"
+                                name="action_view_transfers"
+                                attrs="{'invisible':[('transfer_ids','=',False)]}">
+
+                               <div class="o_form_field o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="transfer_count"/>
+                        </span>
+                        <span class="o_stat_text"> Transfers</span>
+                    </div>
+                            </button>
+                             <button
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-dollar"
+                    name="action_view_invoices_ids"
+                    attrs="{'invisible': [('invoice_ids', '=', False)]}"
+                >
+                    <div class="o_form_field o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="invoices_count" />
+                        </span>
+                        <span class="o_stat_text"> Invoices</span>
+                    </div>
+                </button>
+
+                        <button
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-pencil"
+                    name="action_view_journal_items"
+                    attrs="{'invisible': [('invoice_line_ids', '=', False)]}"
+                >
+                    <div class="o_form_field o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="invoice_line_counts" />
+                        </span>
+                        <span class="o_stat_text"> Journals</span>
+                    </div>
+                </button>
+                        <button
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-dollar"
+                    name="action_view_payments">
+
+
+                    <div class="o_form_field o_stat_info">
+                        <span class="o_stat_value">
+
+                        </span>
+                        <span class="o_stat_text"> Payments</span>
+                    </div>
+                </button>
+                    <button
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-pencil"
+                    name="action_view_analytic_lines">
+
+
+                    <div class="o_form_field o_stat_info">
+                        <span class="o_stat_value">
+
+                        </span>
+                        <span class="o_stat_text"> Analytic Accounts</span>
+                    </div>
+                </button>
+
+
+
+
+
+                        </div>
+                        <div class="oe_title">
+                            <label for="name"/>
+                            <h1>
+                                <field name="name" placeholder="Title"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="create_date"/>
+                            </group>
+
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" groups="base.group_user"/>
+                        <field name="message_ids"/>
+                    </div>
+
+                </form>
+            </field>
+        </record>
 
         <record id="cruise_boat_tree_view" model="ir.ui.view">
             <field name="name">cruise.boat.tree</field>
@@ -43,7 +176,7 @@
             <field name="name">Cruise Boat</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cruise.boat</field>
-<!--            <field name="view_type">form</field>-->
+
             <field name="view_mode">tree,form</field>
 
         </record>

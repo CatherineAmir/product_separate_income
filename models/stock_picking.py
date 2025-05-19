@@ -5,16 +5,12 @@ from odoo.exceptions import UserError
 class StockPicking(models.Model):
     _inherit = 'stock.picking',
 
-
     boat_id = fields.Many2one('cruise.boat', string='Boat id')
     analytic_distribution = fields.Json()
     analytic_precision = fields.Integer(
         store=False,
         default=lambda self: self.env['decimal.precision'].precision_get("Percentage Analytic"),
     )
-
-
-
 
 class StockMove(models.Model):
     _inherit = 'stock.move'

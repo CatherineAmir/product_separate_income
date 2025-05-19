@@ -87,7 +87,7 @@ class Cruise(models.Model):
                 if not l.is_paid_guide:
                     product_id=self.env['product.product'].search([("product_tmpl_id.occupancy","=",l.occupancy),("categ_id.name","ilike","%Accomodation")
                                                                       ,('name','not ilike','%guide%'),
-                                                                      ("boat_id","=",cruise_boat_id)])
+                                                                      ("boat_id","=",cruise_boat_id)],limit=1)
 
 
                     print("product_id",product_id)
@@ -105,7 +105,7 @@ class Cruise(models.Model):
                 # print('persons',l.cabinet_number*(int(l.occupancy)-0.5*int(l.children)),)
 
                 invoice_lines.append({
-                    'product_id':product_id.id,
+                    'product_id':product_id[0].id,
                     'quantity':int(l.nights)*l.cabinet_number,
                     'price_unit':l.rate,
                     'move_id':invoice_id.id,
@@ -191,16 +191,14 @@ class Cruise(models.Model):
             }
         }
     def action_view_payments(self):
-        print("domain",[("reconciled_invoice_ids", "in", self.invoice_ids.ids)])
+
         return{
             "type":"ir.actions.act_window",
             "res_model": "account.payment",
             "domain": [("reconciled_invoice_ids", "in", self.invoice_ids.ids),("state",'=',"posted"),("payment_type",'=','inbound')],
             "name": self.name,
             "view_mode": "tree,form",
-            # "context":{
-            #     "group_by": "account_id"
-            # }
+
         }
 
 class CruiseLine(models.Model):

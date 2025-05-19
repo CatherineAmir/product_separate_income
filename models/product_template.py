@@ -9,6 +9,7 @@ class ProductTemplate(models.Model):
 
 
 class ProductProduct(models.Model):
-   _inherit='product.product'
+   _inherit = 'product.product'
+
    boat_id=fields.Many2one('cruise.boat',related='product_tmpl_id.boat_id', string="Boat")
 
