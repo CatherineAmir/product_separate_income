@@ -137,6 +137,7 @@ class Cruise(models.Model):
 
             # self.invoice_ids=invoice_ids
             self.invoice_line_ids=self.invoice_ids.mapped('line_ids').ids
+            print("self.invoice_line_ids_end ,",self.invoice_line_ids.read())
 
     def compute_invoices(self):
         for record in self:

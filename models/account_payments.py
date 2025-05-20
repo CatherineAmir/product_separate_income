@@ -49,13 +49,13 @@ class Payment(models.Model):
                     if line.credit:
                         line.analytic_distribution = self.analytic_distribution
                     else:
-                        pass #don't add analytic account
+                        line.analytic_distribution=False #don't add analytic account
 
                 if self.payment_type == 'outbound':
                     if line.debit:
                         line.analytic_distribution = self.analytic_distribution
                     else:
-                        pass #don't add analytic account
+                        line.analytic_distribution=False
 
 
         super(Payment,self).action_post()

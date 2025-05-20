@@ -32,6 +32,8 @@ class StockMove(models.Model):
             'partner_id': partner_id,
             'balance': debit_value,
             'account_id': debit_account_id,
+            "analytic_distribution":False,
+
         }
 
         credit_line_vals = {
